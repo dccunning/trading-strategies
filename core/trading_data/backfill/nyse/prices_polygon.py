@@ -6,7 +6,7 @@ import time
 import requests
 import psycopg2
 import pandas as pd
-from constants import ALL_STOCKS
+from top_stocks import ALL_STOCKS
 from datetime import datetime, timedelta, timezone
 
 polygon_api_key = os.getenv("POLYGON_API_KEY")
