@@ -43,7 +43,7 @@ while True:
                     'price': stock_data['c'], 
                     'time': stock_time
                 }
-                producer.send('finnhub-stock-data', key=stock.encode('utf-8'), value=stock_data_payload)
+                producer.send('finnhub-nyse-stock-prices', key=stock.encode('utf-8'), value=stock_data_payload)
                 producer.flush()
             if exit:
                 exit = False

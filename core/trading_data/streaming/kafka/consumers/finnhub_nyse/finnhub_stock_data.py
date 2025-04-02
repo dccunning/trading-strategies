@@ -7,7 +7,7 @@ from kafka import KafkaConsumer
 
 
 consumer = KafkaConsumer(
-    'finnhub-stock-data',
+    'finnhub-nyse-stock-prices',
     bootstrap_servers='localhost:9092',
     value_deserializer=lambda v: json.loads(v.decode('utf-8'))
 )
