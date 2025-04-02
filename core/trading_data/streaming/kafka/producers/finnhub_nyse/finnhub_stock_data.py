@@ -10,13 +10,14 @@ from datetime import datetime, timezone
 from finnhub.exceptions import FinnhubAPIException
 from helpers import sleep_until_next_minute_plus_10, is_within_work_hours
 
-
 FINNHUB_API_KEY = os.getenv("FINNHUB_API_KEY")
+
 
 def fetch_stock_price(symbol):
     finnhub_client = finnhub.Client(api_key=FINNHUB_API_KEY)
     response = finnhub_client.quote(symbol)
     return response
+
 
 producer = KafkaProducer(
     bootstrap_servers='localhost:9092',
@@ -36,11 +37,12 @@ while True:
                     exit = True
                     break
 
-                stock_time = datetime.fromtimestamp(stock_data['t'], timezone.utc).astimezone(pytz.timezone("America/New_York")).strftime('%Y-%m-%d %H:%M:00')
+                stock_time = datetime.fromtimestamp(stock_data['t'], timezone.utc).astimezone(
+                    pytz.timezone("America/New_York")).strftime('%Y-%m-%d %H:%M:00')
                 stock_data_payload = {
-                    'symbol': stock, 
+                    'symbol': stock,
                     'category': category,
-                    'price': stock_data['c'], 
+                    'price': stock_data['c'],
                     'time': stock_time
                 }
                 producer.send('finnhub-nyse-stock-prices', key=stock.encode('utf-8'), value=stock_data_payload)
