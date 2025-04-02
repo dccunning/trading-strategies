@@ -18,7 +18,7 @@ class PythonExecutor:
         if not os.path.exists(self.python_bin):
             raise ValueError(f"Python binary not found in venv: {self.python_bin}")
 
-        self.LOCAL_TMP_ROOT = os.path.expanduser("~/.data-retrival-agent/tmp/")
+        self.LOCAL_TMP_ROOT = os.path.expanduser("~/.trading-strategy/tmp/")
         os.makedirs(self.LOCAL_TMP_ROOT, exist_ok=True)
 
     def execute_code(self, script: str, env_var: dict = None, timeout: int = 10) -> List[dict]:
