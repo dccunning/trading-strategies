@@ -8,7 +8,7 @@ from kafka import KafkaProducer
 from constants import TOP_STOCKS
 from datetime import datetime, timezone
 from finnhub.exceptions import FinnhubAPIException
-from helpers import sleep_until_next_minute_plus_10, is_within_work_hours
+from utils import sleep_until_next_minute_plus_10, is_within_work_hours
 
 FINNHUB_API_KEY = os.getenv("FINNHUB_API_KEY")
 
