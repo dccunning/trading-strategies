@@ -26,3 +26,16 @@ combinations and surfaces performance metrics for comparative analysis.
 #### Frontend
 
 1. Save index.html to the local/cloud server
+
+
+#### Docker setup instructions
+
+Restart:
+```
+docker-compose up -d
+```
+
+If you make changes to producer/consumer code and want to rebuild:
+```
+docker-compose up --build
+```

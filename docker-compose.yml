@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  zookeeper:
+    image: bitnami/zookeeper:latest
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+
+  kafka:
+    image: bitnami/kafka:3.3.1
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://0.0.0.0:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_LOG_RETENTION_MS=604800000
+      - KAFKA_CFG_LOG_CLEANUP_POLICY=delete
+    volumes:
+      - kafka_data:/bitnami/kafka
+    depends_on:
+      - zookeeper
+
+  kadeck: # Kafka UI
+    image: xeotek/kadeck
+    container_name: kadeck
+    ports:
+      - "9999:8133"
+    environment:
+      - xeotek_kadeck_free=dccunning@gmail.com
+      - xeotek_kadeck_secret=fgaJDS9348asdjsbdDIB472923u
+    depends_on:
+      - kafka
+
+  kafka-app:
+    build:
+      context: .
+      dockerfile: trading_data/streaming/kafka/Dockerfile
+    container_name: kafka-app
+    env_file: .env
+    depends_on:
+      - kafka
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+    volumes:
+      - ./trading_data/streaming/kafka:/kafka
+      - ./clients:/clients
+      - ./utils:/utils
+    restart: always
+
+volumes:
+  kafka_data:
