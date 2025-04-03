@@ -2,7 +2,7 @@ import os
 import time
 import datetime
 import requests
-from core.clients.database import Database
+from clients.database import Database
 
 FINNHUB_API_KEY = os.getenv("FINNHUB_API_KEY")
 RATE_LIMIT_PER_MIN = 60
