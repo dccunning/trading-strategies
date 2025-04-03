@@ -2,7 +2,7 @@ import os
 import numpy as np
 import requests
 import pandas as pd
-from core.clients.database import Database
+from clients.database import Database
 
 db = Database()
 
