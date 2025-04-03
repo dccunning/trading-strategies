@@ -8,7 +8,7 @@ import psycopg2
 from typing import List
 from decimal import Decimal
 from datetime import datetime, date, time
-from core.utils.connected_network import on_home_network
+from utils.connected_network import on_home_network
 
 
 class Database:
