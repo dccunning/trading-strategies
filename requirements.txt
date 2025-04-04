@@ -9,3 +9,4 @@ requests>=2.32.3
 yfinance>=0.2.50
 asyncpg==0.30.0
 httpx==0.28.1
+aiokafka==0.12.0
