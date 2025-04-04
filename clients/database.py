@@ -15,15 +15,15 @@ class Database:
     def __init__(
             self,
             database: str = os.getenv("DATABASE_NAME"),
-            user: str = os.getenv("DATABASE_EXTERNAL_USER"),
-            password: str = os.getenv("DATABASE_EXTERNAL_USER_PASSWORD"),
-            host: str = os.getenv("DATABASE_HOME_HOST"),
+            user: str = os.getenv("DATABASE_USER"),
+            password: str = os.getenv("DATABASE_PASSWORD"),
+            host: str = os.getenv("DATABASE_HOME_HOST") if on_home_network() else os.getenv("DATABASE_AWAY_HOST"),
             port: str = os.getenv("DATABASE_PORT")
     ):
         self.database = database
         self.user = user
         self.password = password
-        self.host = host if on_home_network() else os.getenv("DATABASE_AWAY_HOST")
+        self.host = host
         self.port = port
 
     def __get_db_connection(self):
@@ -67,7 +67,7 @@ class Database:
                 json_list = [dict(zip(columns, [serialize_value(val) for val in row])) for row in data]
                 return json_list
 
-    async def arun_query(self, query: str, params: tuple = None) -> List | None:
+    async def arun_query(self, query: str, params: tuple | List = None) -> List | None:
         """Asynchronously return results for a query executed on the given database."""
         conn = await self.__aget_db_connection()
         try:
