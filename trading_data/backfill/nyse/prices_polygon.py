@@ -13,8 +13,8 @@ polygon_api_key = os.getenv("POLYGON_API_KEY")
 
 conn = psycopg2.connect(
     dbname=os.getenv("DATABASE_NAME"),
-    user=os.getenv("DATABASE_EXTERNAL_USER"),
-    password=os.getenv("DATABASE_EXTERNAL_USER_PASSWORD"),
+    user=os.getenv("DATABASE_USER"),
+    password=os.getenv("DATABASE_PASSWORD"),
     host=os.getenv("DATABASE_HOME_HOST"),
     port=os.getenv("DATABASE_PORT")
 )
