@@ -20,13 +20,15 @@ def fetch_stock_price(symbol):
 
 
 producer = KafkaProducer(
-    bootstrap_servers='localhost:9092',
+    bootstrap_servers='kafka:9092',
     value_serializer=lambda v: json.dumps(v).encode('utf-8')
 )
 
 # Stream to Kafka
 exit = False
 while True:
+    if not exit:
+        break
     if is_within_work_hours():
         for category in TOP_STOCKS:
             for stock in TOP_STOCKS[category]:
