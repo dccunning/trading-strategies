@@ -23,9 +23,9 @@ logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 
 conn = psycopg2.connect(
     dbname=os.getenv("DATABASE_NAME"),
-    user=os.getenv("DATABASE_EXTERNAL_USER"),
-    password=os.getenv("DATABASE_EXTERNAL_USER_PASSWORD"),
-    host=os.getenv("DATABASE_HOST"),
+    user=os.getenv("DATABASE_USER"),
+    password=os.getenv("DATABASE_PASSWORD"),
+    host=os.getenv("DATABASE_HOME_HOST"),
     port=os.getenv("DATABASE_PORT")
 )
 cur = conn.cursor()
