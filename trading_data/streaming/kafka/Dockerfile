@@ -1,13 +1,15 @@
-FROM python:3.10-slim
+FROM python:3.12-slim
 
-WORKDIR /kafka
+WORKDIR /
 
-# Copy the kafka folder to root dir
-COPY trading_data/streaming/kafka/ ./
+COPY trading_data/streaming/kafka/ ./kafka
+COPY clients/ ./clients
+COPY utils/ ./utils
 
-# Install requirements
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Default: run all producer and consumer scripts
-CMD ["python", "start_all.py"]
+ENV PYTHONPATH="/kafka:/clients:/utils:$PYTHONPATH"
+
+# Start all producer and consumer scripts
+CMD ["python", "kafka/start_all.py"]
