@@ -43,6 +43,11 @@ services:
     build:
       context: .
       dockerfile: trading_data/streaming/kafka/Dockerfile
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     container_name: kafka-app
     env_file: .env
     depends_on:
