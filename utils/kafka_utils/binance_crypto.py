@@ -1,8 +1,11 @@
 import httpx
 import asyncio
+import logging
 from typing import List
 from decimal import Decimal
 from datetime import datetime, timezone
+
+logging.getLogger("httpx").setLevel(logging.WARNING)
 
 futures_price_book_1s = """
 CREATE TABLE crypto.futures_price_book_1s (
@@ -105,10 +108,12 @@ async def get_futures_price_bookTicker(symbols: List[str] = None) -> List[dict]:
             askPrice = book.get("askPrice")
             bidQty = book.get("bidQty")
             askQty = book.get("askQty")
-            mid = (bidPrice + askPrice) / 2 if bidPrice is not None and askPrice is not None else None
+            midPrice = (bidPrice + askPrice) / 2 if bidPrice is not None and askPrice is not None else None
 
-            mid_decimals = max(get_decimal_places(bidPrice), get_decimal_places(askPrice)) + 1
-            midPrice = round(mid, mid_decimals)
+            if midPrice is not None:
+                mid_decimals = max(get_decimal_places(bidPrice), get_decimal_places(askPrice)) + 1
+                midPrice = round(midPrice, mid_decimals)
+
             price_ticks.append({
                 "symbol": symbol,
                 "timestamp": all_prices_ts,
