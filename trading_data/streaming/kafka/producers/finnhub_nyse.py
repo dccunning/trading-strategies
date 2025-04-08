@@ -1,5 +1,3 @@
-__name__ = "Dimitri Cunning"
-
 import json
 import os
 import pytz
@@ -7,8 +5,8 @@ import finnhub
 from kafka import KafkaProducer
 from datetime import datetime, timezone
 from finnhub.exceptions import FinnhubAPIException
-from kafka_streams.utils.finnhub_nyse import TOP_STOCKS
-from kafka_streams.utils.finnhub_nyse import sleep_until_next_minute_plus_10, is_within_work_hours
+from utils.kafka_utils.finnhub_nyse import TOP_STOCKS
+from utils.kafka_utils.finnhub_nyse import sleep_until_next_minute_plus_10, is_within_work_hours
 
 TOPIC = 'finnhub-nyse-stock-prices'
 FINNHUB_API_KEY = os.getenv("FINNHUB_API_KEY")
