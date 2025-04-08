@@ -1,5 +1,3 @@
-__name__ = "Dimitri Cunning"
-
 import os
 import json
 import time
@@ -9,7 +7,7 @@ from clients.database import Database
 
 TOPIC = 'crypto-futures-price-book-1m'
 BATCH_INTERVAL_SECONDS = 60.0
-
+LOG_INTERVAL_SECONDS = 3600
 
 consumer = KafkaConsumer(
     TOPIC,
@@ -25,8 +23,16 @@ VALUES %s
 ON CONFLICT (symbol, timestamp) DO NOTHING;
 """
 
-buffer = []
+
+def safe_float(val):
+    return float(val) if val is not None else None
+
+
+hourly_insert_count = 0
+hour_start_time = time.time()
 last_batch_time = time.time()
+buffer = []
+
 for message in consumer:
     data = message.value
     ts = data.get('timestamp')[:19]
@@ -34,12 +40,12 @@ for message in consumer:
     row = (
         symbol,
         ts,
-        float(data.get('last_trade_price')),
-        float(data.get('bid_price')),
-        float(data.get('ask_price')),
-        float(data.get('mid_price')),
-        float(data.get('bid_qty')),
-        float(data.get('ask_qty')),
+        safe_float(data.get('last_trade_price')),
+        safe_float(data.get('bid_price')),
+        safe_float(data.get('ask_price')),
+        safe_float(data.get('mid_price')),
+        safe_float(data.get('bid_qty')),
+        safe_float(data.get('ask_qty')),
         data.get('ts_last_trade_price'),
         data.get('ts_book_ticker')
     )
@@ -47,8 +53,12 @@ for message in consumer:
 
     if time.time() - last_batch_time >= BATCH_INTERVAL_SECONDS:
         if buffer:
-            logging.log(logging.INFO, f"Inserting: {buffer}")
             db.run_query(insert_query, buffer)
-            logging.log(logging.INFO, f"Inserted {len(buffer)} rows...")
+            hourly_insert_count += len(buffer)
             buffer = []
         last_batch_time = time.time()
+
+        if time.time() - hour_start_time >= LOG_INTERVAL_SECONDS:
+            logging.info(f"{TOPIC}: consumed and inserted {hourly_insert_count} rows")
+            hourly_insert_count = 0
+            hour_start_time = time.time()

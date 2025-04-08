@@ -1,5 +1,3 @@
-__name__ = "Dimitri Cunning"
-
 import os
 import json
 import time
@@ -9,7 +7,7 @@ from clients.database import Database
 
 TOPIC = 'crypto-futures-mark-index-500ms'
 BATCH_INTERVAL_SECONDS = 60.0
-
+LOG_INTERVAL_SECONDS = 3600
 
 consumer = KafkaConsumer(
     TOPIC,
@@ -25,8 +23,16 @@ VALUES %s
 ON CONFLICT (symbol, timestamp) DO NOTHING;
 """
 
-buffer = []
+
+def safe_float(val):
+    return float(val) if val is not None else None
+
+
+hourly_insert_count = 0
+hour_start_time = time.time()
 last_batch_time = time.time()
+buffer = []
+
 for message in consumer:
     data = message.value
     ts = data.get('timestamp')[:22]
@@ -34,10 +40,10 @@ for message in consumer:
     row = (
         symbol,
         ts,
-        float(data.get('mark_price')),
-        float(data.get('index_price')),
-        float(data.get('last_funding_rate')),
-        float(data.get('interest_rate')),
+        safe_float(data.get('mark_price')),
+        safe_float(data.get('index_price')),
+        safe_float(data.get('last_funding_rate')),
+        safe_float(data.get('interest_rate')),
         data.get('ts_next_funding_time'),
         data.get('ts_premium_index')
     )
@@ -45,8 +51,12 @@ for message in consumer:
 
     if time.time() - last_batch_time >= BATCH_INTERVAL_SECONDS:
         if buffer:
-            logging.log(logging.INFO, f"Inserting: {buffer}")
             db.run_query(insert_query, buffer)
-            logging.log(logging.INFO, f"Inserted {len(buffer)} rows...")
+            hourly_insert_count += len(buffer)
             buffer = []
         last_batch_time = time.time()
+
+        if time.time() - hour_start_time >= LOG_INTERVAL_SECONDS:
+            logging.info(f"{TOPIC}: consumed and inserted {hourly_insert_count} rows")
+            hourly_insert_count = 0
+            hour_start_time = time.time()

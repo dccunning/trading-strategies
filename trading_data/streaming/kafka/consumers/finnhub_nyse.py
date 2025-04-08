@@ -1,5 +1,3 @@
-__name__ = "Dimitri Cunning"
-
 import logging
 import os
 import json
