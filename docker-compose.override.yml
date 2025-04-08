@@ -28,7 +28,7 @@ services:
     depends_on:
       - zookeeper
 
-  kadeck: # Kafka UI
+  kadeck:
     image: xeotek/kadeck
     container_name: kadeck
     ports:
@@ -44,21 +44,21 @@ services:
       context: .
       dockerfile: trading_data/streaming/kafka/Dockerfile
     image: kafka-app
+    container_name: kafka-app
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
-    container_name: kafka-app
     env_file: .env
     depends_on:
       - kafka
     environment:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-#    volumes:
-#      - ./trading_data/streaming/kafka:/kafka
-#      - ./clients:/clients
-#      - ./utils:/utils
+    volumes:
+      - ./trading_data/streaming/kafka:/kafka
+      - ./clients:/clients
+      - ./utils:/utils
     restart: always
 
 volumes:
