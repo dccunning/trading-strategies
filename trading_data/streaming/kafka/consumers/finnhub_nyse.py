@@ -6,9 +6,9 @@ import json
 import psycopg2
 from kafka import KafkaConsumer
 
-
+TOPIC = 'finnhub-nyse-stock-prices'
 consumer = KafkaConsumer(
-    'finnhub-nyse-stock-prices',
+    TOPIC,
     bootstrap_servers='kafka:9092',
     value_deserializer=lambda v: json.loads(v.decode('utf-8'))
 )

@@ -1,10 +1,10 @@
 import subprocess
+import threading
 import logging
 import socket
 import glob
 import time
 import os
-import threading
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(filename)s - %(levelname)s: %(message)s")
 BASE_DIR = os.path.dirname(__file__)
@@ -38,7 +38,7 @@ def run_script_with_retry(script_path, retry_delay=5):
 
 def run_all(relative_path):
     abs_path = os.path.join(BASE_DIR, relative_path)
-    scripts = glob.glob(f"{abs_path}/**/run.py", recursive=True)
+    scripts = glob.glob(f"{abs_path}/*.py")
     threads = []
     for script in scripts:
         t = threading.Thread(target=run_script_with_retry, args=(script,))

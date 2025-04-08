@@ -5,11 +5,12 @@ import os
 import pytz
 import finnhub
 from kafka import KafkaProducer
-from constants import TOP_STOCKS
 from datetime import datetime, timezone
 from finnhub.exceptions import FinnhubAPIException
-from utils import sleep_until_next_minute_plus_10, is_within_work_hours
+from kafka_streams.utils.finnhub_nyse import TOP_STOCKS
+from kafka_streams.utils.finnhub_nyse import sleep_until_next_minute_plus_10, is_within_work_hours
 
+TOPIC = 'finnhub-nyse-stock-prices'
 FINNHUB_API_KEY = os.getenv("FINNHUB_API_KEY")
 
 
@@ -47,7 +48,7 @@ while True:
                     'price': stock_data['c'],
                     'time': stock_time
                 }
-                producer.send('finnhub-nyse-stock-prices', key=stock.encode('utf-8'), value=stock_data_payload)
+                producer.send(TOPIC, key=stock.encode('utf-8'), value=stock_data_payload)
                 producer.flush()
             if exit:
                 exit = False
