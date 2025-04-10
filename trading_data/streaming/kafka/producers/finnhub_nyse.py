@@ -24,10 +24,7 @@ producer = KafkaProducer(
 )
 
 # Stream to Kafka
-exit = False
 while True:
-    if not exit:
-        break
     if is_within_work_hours():
         for category in TOP_STOCKS:
             for stock in TOP_STOCKS[category]:
