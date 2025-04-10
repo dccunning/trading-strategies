@@ -8,6 +8,7 @@ import os
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(filename)s - %(levelname)s: %(message)s")
 BASE_DIR = os.path.dirname(__file__)
+IGNORE_STREAMS = ['binance_api_mark_index_500ms.py', 'binance_api_price_book_1m.py', 'binance_api_price_book_1s.py', 'finnhub_nyse.py']
 
 
 def wait_for_kafka(host="kafka", port=9092, timeout=90):
@@ -41,9 +42,14 @@ def run_all(relative_path):
     scripts = glob.glob(f"{abs_path}/*.py")
     threads = []
     for script in scripts:
-        t = threading.Thread(target=run_script_with_retry, args=(script,))
-        t.start()
-        threads.append(t)
+        if script.split("/")[-1] in IGNORE_STREAMS:
+            logging.info(f"Skipping {relative_path}/{script.split("/")[-1]}")
+            continue
+        else:
+            t = threading.Thread(target=run_script_with_retry, args=(script,))
+            t.start()
+            threads.append(t)
+
     return threads
 
 
