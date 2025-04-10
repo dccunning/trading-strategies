@@ -24,18 +24,13 @@ async def publish_to_kafka_async(
     """
     try:
         if data:
-            tasks = []
             for payload in data:
-                task = asyncio.create_task(
-                    producer.send_and_wait(
-                        topic=topic,
-                        key=payload[key],
-                        value=payload
-                    )
+                payload = {**payload, 'produced_time': time.time() * 1000}
+                await producer.send_and_wait(
+                    topic=topic,
+                    key=str(payload[key]),
+                    value=payload
                 )
-                tasks.append(task)
-
-            await asyncio.gather(*tasks)
     except Exception as e:
         logging.error(f"{topic}: Error sending message: {e}")
 
