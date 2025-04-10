@@ -5,9 +5,9 @@ import logging
 from kafka import KafkaConsumer
 from clients.database import Database
 
-TOPIC = 'crypto-futures-price-book-1s'
+TOPIC = 'crypto-futures-mark-index-500ms'
 BATCH_INTERVAL_SECONDS = 60.0
-LOG_INTERVAL_SECONDS = 3600
+LOG_INTERVAL_SECONDS = 30 #3600
 
 consumer = KafkaConsumer(
     TOPIC,
@@ -18,7 +18,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(filename)s - %(l
 db = Database(host='192.168.1.67')
 
 insert_query = """
-INSERT INTO crypto.futures_price_book_1s (symbol, timestamp, last_trade_price, bid_price, ask_price, mid_price, bid_qty, ask_qty, ts_last_trade_price, ts_book_ticker)
+INSERT INTO crypto.futures_mark_index_500ms (symbol, timestamp, mark_price, index_price, last_funding_rate, interest_rate, ts_next_funding_time, ts_premium_index)
 VALUES %s
 ON CONFLICT (symbol, timestamp) DO NOTHING;
 """
@@ -35,25 +35,23 @@ buffer = []
 
 for message in consumer:
     data = message.value
-    ts = data.get('timestamp')[:19]
+    ts = data.get('timestamp')[:22]
     symbol = data.get('symbol')
     row = (
         symbol,
         ts,
-        safe_float(data.get('last_trade_price')),
-        safe_float(data.get('bid_price')),
-        safe_float(data.get('ask_price')),
-        safe_float(data.get('mid_price')),
-        safe_float(data.get('bid_qty')),
-        safe_float(data.get('ask_qty')),
-        data.get('ts_last_trade_price'),
-        data.get('ts_book_ticker')
+        safe_float(data.get('mark_price')),
+        safe_float(data.get('index_price')),
+        safe_float(data.get('last_funding_rate')),
+        safe_float(data.get('interest_rate')),
+        data.get('ts_next_funding_time'),
+        data.get('ts_premium_index')
     )
     buffer.append(row)
 
     if time.time() - last_batch_time >= BATCH_INTERVAL_SECONDS:
         if buffer:
-            db.run_query(insert_query, buffer)
+            # db.run_query(insert_query, buffer)
             hourly_insert_count += len(buffer)
             buffer = []
         last_batch_time = time.time()

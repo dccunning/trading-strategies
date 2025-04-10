@@ -5,9 +5,9 @@ import logging
 from kafka import KafkaConsumer
 from clients.database import Database
 
-TOPIC = 'crypto-futures-price-book-1m'
+TOPIC = 'crypto-futures-price-book-1s'
 BATCH_INTERVAL_SECONDS = 60.0
-LOG_INTERVAL_SECONDS = 3600
+LOG_INTERVAL_SECONDS = 30 #3600
 
 consumer = KafkaConsumer(
     TOPIC,
@@ -18,7 +18,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(filename)s - %(l
 db = Database(host='192.168.1.67')
 
 insert_query = """
-INSERT INTO crypto.futures_price_book_1m (symbol, timestamp, last_trade_price, bid_price, ask_price, mid_price, bid_qty, ask_qty, ts_last_trade_price, ts_book_ticker)
+INSERT INTO crypto.futures_price_book_1s (symbol, timestamp, last_trade_price, bid_price, ask_price, mid_price, bid_qty, ask_qty, ts_last_trade_price, ts_book_ticker)
 VALUES %s
 ON CONFLICT (symbol, timestamp) DO NOTHING;
 """
@@ -53,7 +53,7 @@ for message in consumer:
 
     if time.time() - last_batch_time >= BATCH_INTERVAL_SECONDS:
         if buffer:
-            db.run_query(insert_query, buffer)
+            # db.run_query(insert_query, buffer)
             hourly_insert_count += len(buffer)
             buffer = []
         last_batch_time = time.time()
