@@ -5,9 +5,9 @@ import logging
 from kafka import KafkaConsumer
 from clients.database import Database
 
-TOPIC = 'crypto-futures-price-book-1s'
+TOPIC = 'binance-api-price-book-1s'
 BATCH_INTERVAL_SECONDS = 60.0
-LOG_INTERVAL_SECONDS = 30 #3600
+LOG_INTERVAL_SECONDS = 3600
 
 consumer = KafkaConsumer(
     TOPIC,
@@ -53,7 +53,7 @@ for message in consumer:
 
     if time.time() - last_batch_time >= BATCH_INTERVAL_SECONDS:
         if buffer:
-            # db.run_query(insert_query, buffer)
+            db.run_query(insert_query, buffer)
             hourly_insert_count += len(buffer)
             buffer = []
         last_batch_time = time.time()

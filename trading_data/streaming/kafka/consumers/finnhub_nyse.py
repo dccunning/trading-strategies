@@ -37,7 +37,6 @@ for message in consumer:
         conn.commit()
     except Exception as e:
         logging.log(logging.INFO, f"Error: {e}")
-        break
 
 cur.close()
 conn.close()
