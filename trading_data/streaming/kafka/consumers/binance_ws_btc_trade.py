@@ -2,15 +2,12 @@ import os
 import json
 import time
 import logging
-from venv import create
-
 from kafka import KafkaConsumer
 from clients.database import Database
 
 TOPIC = 'binance-ws-btc-trade'
-GROUP = 'binance-trade-consumer'
+GROUP = 'binance-ws-trade'
 BATCH_INTERVAL_SECONDS = 10.0
-LOG_INTERVAL_SECONDS = 20 # 3600
 
 consumer = KafkaConsumer(
     TOPIC,
@@ -19,7 +16,7 @@ consumer = KafkaConsumer(
     value_deserializer=lambda v: json.loads(v.decode('utf-8'))
 )
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(filename)s - %(levelname)s: %(message)s")
-db = Database(host='75.155.166.60')  # '192.168.1.67'
+db = Database(host='192.168.1.67')
 
 insert_query = """
 INSERT INTO crypto.binance_ws_btc_trade 
@@ -43,8 +40,6 @@ CREATE TABLE crypto.binance_ws_btc_trade (
 );
 """
 
-hourly_insert_count = 0
-hour_start_time = time.time()
 last_batch_time = time.time()
 buffer = []
 
@@ -68,7 +63,10 @@ for message in consumer:
 
     if time.time() - last_batch_time >= BATCH_INTERVAL_SECONDS:
         if buffer:
-            db.run_query(insert_query, buffer)
+            try:
+                db.run_query(insert_query, buffer)
+            except Exception as e:
+                logging.warning(f"{TOPIC}: Insert query failed: {e}")
             drifts = [r[5] for r in buffer]
             drift_stats = {
                 "max": round(max(drifts)),
@@ -76,11 +74,5 @@ for message in consumer:
                 "p95": sorted(drifts)[int(len(drifts) * 0.95) - 1]
             }
             logging.log(logging.INFO, f"{TOPIC}: Inserted {len(buffer)} rows - drift_stats: {drift_stats}")
-            hourly_insert_count += len(buffer)
             buffer = []
         last_batch_time = time.time()
-
-        if time.time() - hour_start_time >= LOG_INTERVAL_SECONDS:
-            logging.info(f"{TOPIC}: consumed and inserted {hourly_insert_count} rows")
-            hourly_insert_count = 0
-            hour_start_time = time.time()

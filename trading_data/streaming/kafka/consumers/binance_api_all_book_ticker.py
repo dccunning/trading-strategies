@@ -20,7 +20,7 @@ db = Database(host='192.168.1.67')
 
 insert_query = """
 INSERT INTO crypto.binance_api_all_book_ticker
-(symbol, time, price)
+(symbol, time, bidPrice, bidQty, askPrice, askQty, lastUpdateId)
 VALUES %s
 ON CONFLICT (symbol, time) DO NOTHING;
 """
@@ -28,7 +28,11 @@ create_table = """
 CREATE TABLE crypto.binance_api_all_book_ticker (
     symbol TEXT NOT NULL,
     time BIGINT NOT NULL,
-    price NUMERIC,
+    bidPrice NUMERIC,
+    bidQty NUMERIC,
+    askPrice NUMERIC,
+    askQty NUMERIC,
+    lastUpdateId BIGINT,
     UNIQUE (symbol, time)
 );
 """
@@ -43,7 +47,11 @@ for message in consumer:
     row = (
         data.get('symbol'),
         data.get('time'),
-        data.get('price')
+        data.get('bidPrice'),
+        data.get('bidQty'),
+        data.get('askPrice'),
+        data.get('askQty'),
+        data.get('lastUpdateId')
     )
     buffer.append(row)
 

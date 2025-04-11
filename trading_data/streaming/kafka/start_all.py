@@ -8,7 +8,20 @@ import os
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(filename)s - %(levelname)s: %(message)s")
 BASE_DIR = os.path.dirname(__file__)
-IGNORE_STREAMS = ['binance_api_mark_index_500ms.py', 'binance_api_price_book_1m.py', 'binance_api_price_book_1s.py', 'finnhub_nyse.py']
+IGNORE_STREAMS = [
+    'finnhub_nyse.py',
+    'binance_ws_btc_trade.py',
+]
+
+# binance_api_all_price
+# binance_api_all_book_ticker
+
+# binance_ws_btc_trade @trade
+# binance_ws_xmr_trade @trade
+# binance_ws_btc_book_ticker @bookTicker
+# binance_ws_xmr_book_ticker @bookTicker
+# binance_ws_btc_mark_price @markPrice
+# binance_ws_xmr_mark_price @markPrice
 
 
 def wait_for_kafka(host="kafka", port=9092, timeout=90):
