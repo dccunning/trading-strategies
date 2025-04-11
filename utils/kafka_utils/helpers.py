@@ -73,7 +73,7 @@ async def producer_async(
 
             await asyncio.sleep(max(0, next_run - time.time()))
             data = await get_data_func()
-            await publish_to_kafka_async(producer, topic, data, key_field)
+            await batch_publish_to_kafka_async(producer, topic, data, key_field)
             next_run += frequency
             data_published += len(data)
 
