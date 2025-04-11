@@ -80,19 +80,21 @@ async def retry_fallback_buffer(producer, fallback_buffer):
         await asyncio.sleep(1)
 
 
-def insert_batched_data(db: Database, data: List[tuple], insert_query: str):
+def insert_batched_data(db: Database, data: List[tuple], insert_query: str, topic: str):
     try:
         if data:
             db.run_query(insert_query, data)
+        drifts = [r[-1] for r in data]
+        drift_stats = {
+            "max": round(max(drifts)),
+            "avg": round(sum(drifts) / len(drifts)),
+            "p95": sorted(drifts)[int(len(drifts) * 0.95) - 1]
+        }
+        drift_stats_str = f"{{'max': {drift_stats['max']:>4}, 'avg': {drift_stats['avg']:>4}, 'p95': {drift_stats['p95']:>4}}}"
+        logging.log(logging.INFO, f"Inserted {len(data):>5} rows - drift: {drift_stats_str} ({topic})")
+
     except Exception as e:
         logging.warning(f"Insert query failed: {e}")
-    drifts = [r[-1] for r in data]
-    drift_stats = {
-        "max": round(max(drifts)),
-        "avg": round(sum(drifts) / len(drifts)),
-        "p95": sorted(drifts)[int(len(drifts) * 0.95) - 1]
-    }
-    logging.log(logging.INFO, f"Consumed and inserted {len(data)} rows - drift_stats: {drift_stats}")
 
 
 INSERT_WS_TRADE = """
