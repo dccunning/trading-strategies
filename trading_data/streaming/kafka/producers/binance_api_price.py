@@ -5,7 +5,7 @@ import asyncio
 from aiokafka import AIOKafkaProducer
 from utils.kafka_utils.binance_api import producer_stream_api_book_price
 
-TOPIC = 'binance-api-all-price'
+TOPIC = 'binance-api-price'
 FREQUENCY = 1.0
 KEY = 'symbol'
 URL = "https://fapi.binance.com/fapi/v1/ticker/price"
@@ -13,11 +13,11 @@ URL = "https://fapi.binance.com/fapi/v1/ticker/price"
 """
 kafka-topics.sh --create \
   --bootstrap-server kafka:9092 \
-  --topic binance-api-all-price \
+  --topic binance-api-price \
   --partitions 12 \
   --replication-factor 1
 
-kafka-topics.sh --bootstrap-server kafka:9092 --delete --topic binance-api-all-price
+kafka-topics.sh --bootstrap-server kafka:9092 --delete --topic binance-api-price
 """
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(filename)s - %(levelname)s: %(message)s")

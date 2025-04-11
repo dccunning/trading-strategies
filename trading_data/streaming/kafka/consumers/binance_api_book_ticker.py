@@ -5,7 +5,7 @@ import logging
 from kafka import KafkaConsumer
 from clients.database import Database
 
-TOPIC = 'binance-api-all-book-ticker'
+TOPIC = 'binance-api-book-ticker'
 GROUP = 'binance-api'
 BATCH_INTERVAL_SECONDS = 10.0
 
@@ -16,7 +16,7 @@ consumer = KafkaConsumer(
     value_deserializer=lambda v: json.loads(v.decode('utf-8'))
 )
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(filename)s - %(levelname)s: %(message)s")
-db = Database(host='75.155.166.60') # '192.168.1.67'
+db = Database(host='192.168.1.67')
 
 insert_query = """
 INSERT INTO crypto.binance_api_book_ticker
@@ -59,7 +59,7 @@ for message in consumer:
         if buffer:
             try:
                 db.run_query(insert_query, buffer)
-                logging.log(logging.INFO, f"Inserted {len(buffer)} rows")
+                logging.log(logging.INFO, f"In {len(buffer):>5} rows")
                 buffer = []
             except Exception as e:
                 logging.warning(f"Insert query failed: {e}")
