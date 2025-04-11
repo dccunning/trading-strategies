@@ -52,7 +52,7 @@ for message in consumer:
             try:
                 db.run_query(insert_query, buffer)
             except Exception as e:
-                logging.warning(f"{TOPIC}: Insert query failed: {e}")
-            logging.log(logging.INFO, f"{TOPIC}: Inserted {len(buffer)} rows")
+                logging.warning(f"Insert query failed: {e}")
+            logging.log(logging.INFO, f"Consumed and inserted {len(buffer)} rows")
             buffer = []
         last_batch_time = time.time()

@@ -37,7 +37,7 @@ async def main():
         key_serializer=lambda k: k.encode("utf-8")
     )
     await producer.start()
-    logging.log(logging.INFO, f"{TOPIC}: Started streaming")
+    logging.log(logging.INFO, f"Started producer")
     try:
         await websocket_producer_stream(
             url=BTC_TRADE_WS,

@@ -30,7 +30,7 @@ async def main():
         key_serializer=lambda k: k.encode("utf-8")
     )
     await producer.start()
-    logging.log(logging.INFO, f"{TOPIC}: Started streaming")
+    logging.log(logging.INFO, f"Started producer")
     try:
         await producer_stream_api_book_price(
             producer=producer,

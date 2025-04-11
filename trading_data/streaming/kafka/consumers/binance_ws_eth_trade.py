@@ -64,8 +64,7 @@ for message in consumer:
     if time.time() - last_batch_time >= BATCH_INTERVAL_SECONDS:
         if buffer:
             try:
-                pass
-                # db.run_query(insert_query, buffer)
+                db.run_query(insert_query, buffer)
             except Exception as e:
                 logging.warning(f"Insert query failed: {e}")
             drifts = [r[5] for r in buffer]

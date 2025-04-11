@@ -19,14 +19,14 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(filename)s - %(l
 db = Database(host='192.168.1.67')
 
 insert_query = """
-INSERT INTO crypto.binance_ws_btc_trade 
+INSERT INTO crypto.binance_ws_trade 
 (trade_id, symbol, price, quantity, is_buyer_maker, drift, consumed_time, 
 produced_time, event_time, trade_time)
 VALUES %s
 ON CONFLICT (trade_id) DO NOTHING;
 """
 create_table = """
-CREATE TABLE crypto.binance_ws_btc_trade (
+CREATE TABLE crypto.binance_ws_trade (
     trade_id BIGINT PRIMARY KEY,
     symbol TEXT NOT NULL,
     price NUMERIC,
@@ -66,13 +66,13 @@ for message in consumer:
             try:
                 db.run_query(insert_query, buffer)
             except Exception as e:
-                logging.warning(f"{TOPIC}: Insert query failed: {e}")
+                logging.warning(f"Insert query failed: {e}")
             drifts = [r[5] for r in buffer]
             drift_stats = {
                 "max": round(max(drifts)),
                 "avg": round(sum(drifts) / len(drifts)),
                 "p95": sorted(drifts)[int(len(drifts) * 0.95) - 1]
             }
-            logging.log(logging.INFO, f"{TOPIC}: Inserted {len(buffer)} rows - drift_stats: {drift_stats}")
+            logging.log(logging.INFO, f"Consumed and inserted {len(buffer)} rows - drift_stats: {drift_stats}")
             buffer = []
         last_batch_time = time.time()
