@@ -5,7 +5,7 @@ import logging
 from kafka import KafkaConsumer
 from clients.database import Database
 
-TOPIC = 'binance-api-all-book-ticker'
+TOPIC = 'binance-api-all-price'
 GROUP = 'binance-api'
 BATCH_INTERVAL_SECONDS = 10.0
 
@@ -16,23 +16,19 @@ consumer = KafkaConsumer(
     value_deserializer=lambda v: json.loads(v.decode('utf-8'))
 )
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(filename)s - %(levelname)s: %(message)s")
-db = Database(host='192.168.1.67')
+db = Database(host='75.155.166.60') # '192.168.1.67'
 
 insert_query = """
-INSERT INTO crypto.binance_api_all_book_ticker
-(symbol, time, bidPrice, bidQty, askPrice, askQty, lastUpdateId)
+INSERT INTO crypto.binance_api_price 
+(symbol, time, price)
 VALUES %s
 ON CONFLICT (symbol, time) DO NOTHING;
 """
 create_table = """
-CREATE TABLE crypto.binance_api_all_book_ticker (
+CREATE TABLE crypto.binance_api_price (
     symbol TEXT NOT NULL,
     time BIGINT NOT NULL,
-    bidPrice NUMERIC,
-    bidQty NUMERIC,
-    askPrice NUMERIC,
-    askQty NUMERIC,
-    lastUpdateId BIGINT,
+    price NUMERIC,
     UNIQUE (symbol, time)
 );
 """
@@ -47,11 +43,7 @@ for message in consumer:
     row = (
         data.get('symbol'),
         data.get('time'),
-        data.get('bidPrice'),
-        data.get('bidQty'),
-        data.get('askPrice'),
-        data.get('askQty'),
-        data.get('lastUpdateId')
+        data.get('price')
     )
     buffer.append(row)
 
@@ -59,8 +51,9 @@ for message in consumer:
         if buffer:
             try:
                 db.run_query(insert_query, buffer)
+                logging.log(logging.INFO, f"Inserted {len(buffer)} rows")
+                buffer = []
             except Exception as e:
-                logging.warning(f"{TOPIC}: Insert query failed: {e}")
-            logging.log(logging.INFO, f"Consumed and inserted {len(buffer)} rows")
-            buffer = []
+                logging.warning(f"Insert query failed: {e}")
+
         last_batch_time = time.time()
