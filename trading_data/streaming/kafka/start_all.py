@@ -10,22 +10,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(filename)s - %(l
 BASE_DIR = os.path.dirname(__file__)
 IGNORE_STREAMS = [
     'finnhub_nyse.py',
-    'binance_api_all_price.py',
-    'binance_api_all_book_ticker.py',
-    'binance_ws_btc_trade.py',
-    'binance_ws_eth_trade.py'
-
 ]
-
-# binance_api_all_price
-# binance_api_all_book_ticker
-# binance_ws_btc_trade @trade
-# binance_ws_eth_trade @trade
-
-# binance_ws_btc_book_ticker @bookTicker
-# binance_ws_eth_book_ticker @bookTicker
-# binance_ws_btc_mark_price @markPrice
-# binance_ws_eth_mark_price @markPrice
 
 
 def wait_for_kafka(host="kafka", port=9092, timeout=90):
@@ -43,7 +28,9 @@ def wait_for_kafka(host="kafka", port=9092, timeout=90):
 
 def run_script_with_retry(script_path, retry_delay=5):
     while True:
-        logging.info(f"Starting {script_path}")
+        relative = os.path.relpath(script_path, BASE_DIR)
+        logging.info(f"🚀 Starting {relative}")
+
         proc = subprocess.Popen(["python", script_path])
         exit_code = proc.wait()
         if exit_code == 0:
@@ -60,7 +47,7 @@ def run_all(relative_path):
     threads = []
     for script in scripts:
         if script.split("/")[-1] in IGNORE_STREAMS:
-            logging.info(f"Skipping {relative_path}/{script.split("/")[-1]}")
+            logging.info(f"⏭️ Skipping {relative_path}/{script.split("/")[-1]}")
             continue
         else:
             t = threading.Thread(target=run_script_with_retry, args=(script,))
