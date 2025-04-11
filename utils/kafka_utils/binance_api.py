@@ -181,7 +181,8 @@ async def get_futures_mark_index(symbols: List[str], timeout: float = 0.3) -> Li
                 if (data := response.json())
             ]
 
-            return prices
-    except (httpx.ReadTimeout, httpx.ConnectTimeout) as e:
-        logging.warning(f"get_futures_mark_index (timeout={timeout}): {e}")
-        return []
+async def producer_stream_api_book_price(producer: AIOKafkaProducer, topic: str, key: str, url: str, frequency: float):
+    async with httpx.AsyncClient() as client:
+        while True:
+            asyncio.create_task(get_data_and_produce(client, producer, topic, key, url))
+            await asyncio.sleep(frequency)
