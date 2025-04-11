@@ -7,38 +7,27 @@ import websockets
 from collections import deque
 from aiokafka import AIOKafkaProducer
 
-BINANCE_WS_URL = "wss://fstream.binance.com/ws/btcusdt@trade"
-
 ssl_context = ssl.create_default_context()
 ssl_context.check_hostname = False
 ssl_context.verify_mode = ssl.CERT_NONE
 
 
-async def producer_ws_stream(producer: AIOKafkaProducer, topic: str, key: str):
+async def websocket_producer_stream(url: str, response_mapping: dict, producer: AIOKafkaProducer, topic: str, key: str):
     fallback_buffer = deque(maxlen=10000)
     asyncio.create_task(retry_fallback_buffer(producer, topic, fallback_buffer))
     ws_retry_wait = 1
 
     while True:
         try:
-            async with websockets.connect(BINANCE_WS_URL, ssl=ssl_context) as ws:
+            async with websockets.connect(url, ssl=ssl_context) as ws:
                 logging.info(f"{topic}: WebSocket connection established")
                 ws_retry_wait = 1
                 async for msg in ws:
                     trade = json.loads(msg)
                     trade_data = {
-                        "trade_id": trade["t"],
-                        "symbol": trade["s"],
-                        "price": trade["p"],
-                        "quantity": trade["q"],
-                        # "buyer_order_id": trade.get("b"),
-                        # "seller_order_id": trade.get("a"),
-                        "is_buyer_maker": trade["m"],
-                        "event_type": trade.get("e"),
-                        "produced_time": time.time() * 1000,
-                        # "event_time": trade["E"],
-                        "trade_time": trade["T"]
+                        key: trade[value] for key, value in response_mapping.items()
                     }
+                    trade_data["produced_time"] = time.time() * 1000
 
                     try:
                         await producer.send_and_wait(
