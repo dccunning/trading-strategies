@@ -9,7 +9,7 @@ from aiokafka import AIOKafkaProducer
 from typing import List, Callable, Awaitable
 
 
-async def publish_to_kafka_async(
+async def batch_publish_to_kafka_async(
         producer: AIOKafkaProducer,
         topic: str,
         data: List[dict],
