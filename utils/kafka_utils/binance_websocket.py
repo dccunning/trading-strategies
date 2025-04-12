@@ -101,8 +101,11 @@ def insert_batched_data(db: Database, data: List[tuple], insert_query: str, topi
         drift_stats_str = f"{{'max': {drift_stats['max']:>4}, 'avg': {drift_stats['avg']:>4}, 'p95': {drift_stats['p95']:>4}}}"
         logging.log(logging.INFO, f"Inserted {len(data):>5} rows - drift: {drift_stats_str} ({topic})")
 
+        if drift_stats['avg'] > 1000:
+            logging.warning(f"Average drift is over 1s - drift: {drift_stats_str} ({topic})")
+
     except Exception as e:
-        logging.warning(f"Insert query failed: {e}")
+        logging.error(f"Insert query failed: {e}")
 
 
 INSERT_WS_TRADE = """
