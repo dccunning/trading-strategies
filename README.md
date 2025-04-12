@@ -42,42 +42,37 @@ docker-compose up --build -d
 ```
 
 
-
-Build Docker image: kafka-app for linux/amd64 (in this case)
+Transfer compose to the server
 ```
-docker build --platform linux/amd64 -t kafka-app-external -f trading_data/streaming/kafka/Dockerfile .
-```
-
-Save locally created Docker image kafka-app-external to kafka-app-external.tar for export
-```
-docker save -o .images/kafka-app-external.tar kafka-app-external
+scp docker-compose.yml dimitri@192.168.1.67:~/kafka/docker-compose.yml
+scp -P 2634 docker-compose.yml dimitri@75.155.166.60:~/kafka/docker-compose.yml
 ```
 
-Create one transferable archive with all the images for the docker-compose to use
+Start Kafka environment
 ```
-tar --exclude='._*' -czf .images/trading-kafka-streams.tar.gz \
-  .images/kafka-app-external.tar \
-  docker-compose.yml \
-  .env
+docker compose up --build -d
 ```
 
-Transfer to the server
+Transfer the project to the server
 ```
-scp .images/trading-kafka-streams.tar.gz dimitri@192.168.1.67:~/
-scp -P 2634 .images/trading-kafka-streams.tar.gz dimitri@75.155.166.60:~/
-```
-
-Extract images inside the server
-```
-mkdir kafka_trading && tar -xzf trading-kafka-streams.tar.gz -C kafka_trading
-cd kafka_trading
+scp TradingStrategy dimitri@192.168.1.67:~/services/TradingStrategy
+scp -P 2634 TradingStrategy dimitri@75.155.166.60:~/kafka/TradingStrategy
 ```
 
-Load images
+Copy service file to systemd dir
 ```
-docker load -i .images/kafka-app-external.tar
+cd services/TradingStrategy
 
-docker-compose up --build -d
+sudo cp kafka-stream.service /etc/systemd/system/
+```
 
-docker stop kafka-app
+Start the systemd service
+```
+sudo systemctl daemon-reload
+sudo systemctl restart kafka-stream.service
+systemctl status kafka-stream.service
+journalctl -u kafka-stream.service -f
+
+sudo systemctl enable kafka-stream.service
+sudo systemctl disable kafka-stream.service 
 ```
