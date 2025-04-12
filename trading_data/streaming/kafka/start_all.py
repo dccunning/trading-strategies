@@ -59,7 +59,6 @@ def run_all(relative_path):
 
 if __name__ == "__main__":
     wait_for_kafka()
-    time.sleep(15)
 
     threads = []
     threads.extend(run_all("producers"))
