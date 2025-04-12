@@ -12,6 +12,7 @@ from clients.database import Database
 ssl_context = ssl.create_default_context()
 ssl_context.check_hostname = False
 ssl_context.verify_mode = ssl.CERT_NONE
+semaphore = asyncio.Semaphore(10)
 
 
 async def websocket_producer_stream(
@@ -46,19 +47,26 @@ async def websocket_producer_stream(
 
                     trade_data["produced_time"] = time.time() * 1000
                     symbol = str(trade_data.get(key, 'unknown'))
-                    try:
-                        await producer.send_and_wait(
-                            topic=topic,
-                            key=symbol,
-                            value=trade_data
-                        )
-                    except Exception as e:
-                        logging.error(f"{topic}: Kafka error: {e}")
-                        fallback_buffer.append((topic, symbol, trade_data))
+
+                    asyncio.create_task(send_trade_to_kafka(producer, topic, symbol, trade_data, fallback_buffer))
+
         except Exception as ws_error:
             logging.error(f"WebSocket error: {ws_error}. Reconnecting in 5 seconds...")
             await asyncio.sleep(ws_retry_wait)
             ws_retry_wait = min(ws_retry_wait + 2, 30)
+
+
+async def send_trade_to_kafka(producer, topic, symbol, trade_data, fallback_buffer):
+    async with semaphore:
+        try:
+            await producer.send_and_wait(
+                topic=topic,
+                key=symbol,
+                value=trade_data
+            )
+        except Exception as e:
+            logging.error(f"{topic}: Kafka error: {e}")
+            fallback_buffer.append((topic, symbol, trade_data))
 
 
 async def retry_fallback_buffer(producer, fallback_buffer):
