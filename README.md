@@ -55,8 +55,8 @@ docker compose up --build -d
 
 Transfer the project to the server
 ```
-rsync -av --exclude='.venv' TradingStrategy/ dimitri@192.168.1.67:~/services/TradingStrategy/
-rsync -av --exclude='.venv' -e 'ssh -p 2634' TradingStrategy/ dimitri@75.155.166.60:~/kafka/TradingStrategy/
+rsync -av --exclude='.venv' --exclude='*.log' TradingStrategy/ dimitri@192.168.1.67:~/services/TradingStrategy/
+rsync -av --exclude='.venv' --exclude='*.log' -e 'ssh -p 2634' TradingStrategy/ dimitri@75.155.166.60:~/kafka/TradingStrategy/
 ```
 
 Copy service file to systemd dir
