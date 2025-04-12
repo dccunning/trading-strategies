@@ -13,7 +13,7 @@ IGNORE_STREAMS = [
 ]
 
 
-def wait_for_kafka(host="kafka", port=9092, timeout=90):
+def wait_for_kafka(host="localhost", port=9092, timeout=90):
     logging.info(f"⏳ Waiting for Kafka at {host}:{port}...")
     start = time.time()
     while time.time() - start < timeout:
@@ -31,7 +31,7 @@ def run_script_with_retry(script_path, retry_delay=5):
         relative = os.path.relpath(script_path, BASE_DIR)
         logging.info(f"🚀 Starting {relative}")
 
-        proc = subprocess.Popen(["python", script_path])
+        proc = subprocess.Popen(["python3", script_path])
         exit_code = proc.wait()
         if exit_code == 0:
             logging.info(f"{script_path} exited normally.")
