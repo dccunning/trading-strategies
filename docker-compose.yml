@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   zookeeper:
-    platform: linux/amd64
+#    platform: linux/amd64
     image: bitnami/zookeeper:latest
     container_name: zookeeper
     ports:
@@ -11,17 +11,19 @@ services:
       - ALLOW_ANONYMOUS_LOGIN=yes
 
   kafka:
-    platform: linux/amd64
+#    platform: linux/amd64
     image: bitnami/kafka:3.3.1
     container_name: kafka
     ports:
       - "9092:9092"
+      - "29092:29092"
     environment:
       - KAFKA_BROKER_ID=1
       - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://0.0.0.0:9092
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://0.0.0.0:9092,INTERNAL://0.0.0.0:29092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092,INTERNAL://kafka:29092
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,INTERNAL:PLAINTEXT
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
       - ALLOW_PLAINTEXT_LISTENER=yes
 
       # High-throughput performance tuning
@@ -40,7 +42,7 @@ services:
       - zookeeper
 
   kadeck:
-    platform: linux/amd64
+#    platform: linux/amd64
     image: xeotek/kadeck
     container_name: kadeck
     ports:
