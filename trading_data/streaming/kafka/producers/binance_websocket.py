@@ -46,12 +46,12 @@ WS_URL = (
 
 _topics = """ binance-ws-trade, binance-ws-bookTicker, binance-ws-markPrice
 kafka-topics.sh --create \
-  --bootstrap-server kafka:9092 \
+  --bootstrap-server localhost:9092 \
   --topic TOPIC \
   --partitions 12 \
   --replication-factor 1
 
-kafka-topics.sh --bootstrap-server kafka:9092 --delete --topic TOPIC
+kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic TOPIC
 """
 
 

@@ -12,12 +12,12 @@ URL = "https://fapi.binance.com/fapi/v1/ticker/bookTicker"
 
 """
 kafka-topics.sh --create \
-  --bootstrap-server kafka:9092 \
+  --bootstrap-server localhost:9092 \
   --topic binance-api-book-ticker \
   --partitions 12 \
   --replication-factor 1
 
-kafka-topics.sh --bootstrap-server kafka:9092 --delete --topic binance-api-book-ticker
+kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic binance-api-book-ticker
 """
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(filename)s - %(levelname)s: %(message)s")
