@@ -55,8 +55,8 @@ docker compose up --build -d
 
 Transfer the project to the server
 ```
-scp TradingStrategy dimitri@192.168.1.67:~/services/TradingStrategy
-scp -P 2634 TradingStrategy dimitri@75.155.166.60:~/kafka/TradingStrategy
+rsync -av --exclude='.venv' TradingStrategy/ dimitri@192.168.1.67:~/services/TradingStrategy/
+rsync -av --exclude='.venv' -e 'ssh -p 2634' TradingStrategy/ dimitri@75.155.166.60:~/kafka/TradingStrategy/
 ```
 
 Copy service file to systemd dir
@@ -69,10 +69,21 @@ sudo cp kafka-stream.service /etc/systemd/system/
 Start the systemd service
 ```
 sudo systemctl daemon-reload
+sudo systemctl enable kafka-stream.service
 sudo systemctl restart kafka-stream.service
 systemctl status kafka-stream.service
 journalctl -u kafka-stream.service -f
 
-sudo systemctl enable kafka-stream.service
 sudo systemctl disable kafka-stream.service 
+sudo systemctl stop kafka-stream.service
+```
+
+Save logs
+```
+journalctl -u kafka-stream.service \
+  --since "2025-04-12 03:43:57.547" \
+  --output=cat \
+  --no-pager > kafka-stream.log
+  
+scp dimitri@192.168.1.67:/home/dimitri/services/TradingStrategy/kafka-stream.log .
 ```
