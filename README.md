@@ -64,6 +64,7 @@ tar --exclude='._*' -czf .images/trading-kafka-streams.tar.gz \
 Transfer to the server
 ```
 scp .images/trading-kafka-streams.tar.gz dimitri@192.168.1.67:~/
+scp -P 2634 .images/trading-kafka-streams.tar.gz dimitri@75.155.166.60:~/
 ```
 
 Extract images inside the server
@@ -74,7 +75,9 @@ cd kafka_trading
 
 Load images
 ```
-docker load -i kafka-app-external.tar
+docker load -i .images/kafka-app-external.tar
 
 docker-compose up --build -d
+
+docker stop kafka-app
 ```
