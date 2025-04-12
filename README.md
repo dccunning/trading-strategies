@@ -83,7 +83,22 @@ Save logs
 journalctl -u kafka-stream.service \
   --since "2025-04-12 03:43:57.547" \
   --output=cat \
-  --no-pager > kafka-stream.log
+  --no-pager > .monitoring/kafka-stream.log
   
-scp dimitri@192.168.1.67:/home/dimitri/services/TradingStrategy/kafka-stream.log .
+scp dimitri@192.168.1.67:/home/dimitri/services/TradingStrategy/.monitoring/kafka-stream.log .
+```
+
+Start watcher service to email on error or warning, save files (in .monitoring/) to new location for systemctl
+``` 
+sudo cp .monitoring/kafka-log-watcher.service /etc/systemd/system/
+nano /etc/systemd/system/kafka-log-watcher.service
+
+nano ~/services/TradingStrategy/.monitoring/log_alert.sh
+
+sudo systemctl daemon-reexec
+sudo systemctl daemon-reload
+sudo systemctl enable kafka-log-watcher.service
+sudo systemctl start kafka-log-watcher.service
+
+journalctl -u kafka-log-watcher.service -f
 ```

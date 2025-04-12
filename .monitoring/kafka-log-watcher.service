@@ -1,0 +1,11 @@
+[Unit]
+Description=Kafka Stream Log Email Notifier
+After=network.target
+
+[Service]
+ExecStart=/home/dimitri/services/TradingStrategy/.monitoring/log_alert.sh
+Restart=always
+User=dimitri
+
+[Install]
+WantedBy=default.target
