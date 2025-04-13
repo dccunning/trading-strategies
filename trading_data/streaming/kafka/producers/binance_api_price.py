@@ -10,12 +10,16 @@ FREQUENCY = 1.0
 KEY = 'symbol'
 URL = "https://fapi.binance.com/fapi/v1/ticker/price"
 
-"""
+_topic = """
 kafka-topics.sh --create \
   --bootstrap-server localhost:9092 \
   --topic binance-api-price \
   --partitions 12 \
-  --replication-factor 1
+  --replication-factor 1 \
+  --config segment.bytes=10485760 \
+  --config retention.bytes=209715200 \
+  --config retention.ms=259200000 \
+  --config cleanup.policy=delete
 
 kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic binance-api-price
 """
