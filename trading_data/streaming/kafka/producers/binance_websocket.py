@@ -50,9 +50,9 @@ kafka-topics.sh --create \
   --topic TOPIC \
   --partitions 12 \
   --replication-factor 1 \
-  --config segment.bytes=10485760 \
-  --config retention.bytes=209715200 \
-  --config retention.ms=259200000 \
+  --config segment.bytes=1048576 \
+  --config retention.bytes=8388608 \
+  --config retention.ms=86400000 \
   --config cleanup.policy=delete
 
 kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic TOPIC
