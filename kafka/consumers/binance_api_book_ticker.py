@@ -28,7 +28,6 @@ buffer = []
 for message in consumer:
     data = message.value
     consumed_time = time.time() * 1000
-
     row = (
         data.get('symbol'),
         data.get('time'),
