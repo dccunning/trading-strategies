@@ -63,25 +63,3 @@ class AlpacaClient:
                 request_count = 0
 
         return data
-
-
-if __name__ == "__main__":
-    from dotenv import load_dotenv
-    from datetime import datetime, timedelta
-    load_dotenv()
-
-    client = AlpacaClient()
-    tickers = ["AAPL", "MSFT", "NVDA"]
-    start = datetime.now() - timedelta(days=180)
-    end = datetime.now()
-
-    data = client.get_bars(
-        tickers=tickers,
-        timeframe=TimeFrame.Hour,
-        start=start,
-        end=end
-    )
-
-    for symbol, df in data.items():
-        print(f"\n--- {symbol} ({len(df)} bars) ---")
-        print(df.head().to_string())
