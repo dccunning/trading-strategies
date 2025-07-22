@@ -1,4 +1,5 @@
-__pycache__/
-**/.DS_Store
 .env
 .monitoring/kafka-stream.log
+dashboard/sec_stock_data
+algo_strategies/whale_options
+README_LOCAL.md
