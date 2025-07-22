@@ -16,16 +16,21 @@ Currently implemented strategies include:
 3. Streamlit frontend - UI for configuring and running backtests, and viewing results
 
 
-### Usage
+[//]: # (### Usage)
 
+[//]: # ()
 [//]: # (Examples of parameters and output here)
 
+[//]: # ()
+[//]: # ()
+[//]: # (### Add a Strategy)
 
-### Add a Strategy
-
+[//]: # ()
 [//]: # (How to add a new strategy instructions here)
 
+[//]: # ()
+[//]: # ()
+[//]: # (### Database schema)
 
-### Database schema
-
+[//]: # ()
 [//]: # (Define tables here)
