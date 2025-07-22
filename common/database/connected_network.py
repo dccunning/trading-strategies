@@ -7,7 +7,9 @@ HOME_IP = os.getenv("DATABASE_HOME_HOST")
 
 def on_home_network(home_server_ip=HOME_IP):
     """
-    Returns True if the home server IP is reachable (i.e., you're on the home network).
+    If the home server IP is reachable (i.e., you're on the home network).
+
+    :return: True or False
     """
     param = "-n" if platform.system().lower() == "windows" else "-c"
     try:
