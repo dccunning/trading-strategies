@@ -17,7 +17,12 @@ def get_binance_klines(symbol='BTCUSDT', interval='1d', limit=150):
 
 
 def get_ema_strategy_data(days_back: int = 100):
-    # Fetch enough data to compute a stable 50-day EMA
+    """
+    Fetch enough data to compute a stable 50-day EMA
+
+    :param days_back: Number of days to check for
+    :return: DataFrame of price changes
+    """
     data = get_binance_klines(limit=days_back+50)
 
     df = pd.DataFrame({
