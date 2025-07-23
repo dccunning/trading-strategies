@@ -23,7 +23,6 @@ UNIVERSE = [
     'NYSE:GME',
     'NYSE:TDW',
     'NYSE:VAL',
-
     'NASDAQ:VSTE',
     'NASDAQ:CTMX',
     'NASDAQ:CDTG',
