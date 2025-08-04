@@ -9,6 +9,7 @@ from alpaca.data.requests import StockBarsRequest
 from alpaca.data.timeframe import TimeFrame
 
 
+# NOT IN USE
 class AlpacaClient:
     def __init__(self):
         self.api_key = os.environ["ALPACA_API_KEY"]
