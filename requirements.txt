@@ -18,3 +18,4 @@ python-dotenv==1.1.0
 alpaca-py==0.42.0
 pytest==8.4.1
 streamlit==1.47.0
+matplotlib==3.10.3
