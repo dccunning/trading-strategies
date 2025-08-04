@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from matplotlib import pyplot as plt
 from pandas import DataFrame
 
 
@@ -22,8 +23,8 @@ class Performance:
         self.win_rate: float
         self.profit_factor_trade: float
         self.profit_factor_bar: float
-        self.mean_return_bar: float
-        self.volatility_bar: float
+        self.annualised_return_bar: float
+        self.annualised_volatility_bar: float
         self.strategy_sharpe: float
         self.benchmark_sharpe: float
         self.max_drawdown: float
@@ -90,8 +91,8 @@ class Performance:
         self.df.dropna(subset=['log_return'], inplace=True)
 
         self.profit_factor_bar = self._calc_profit_factor_bar()
-        self.mean_return_bar = self.df['log_pnl'].mean()
-        self.volatility_bar = self.df['log_pnl'].std()
+        self.annualised_return_bar = self.df['log_pnl'].mean() * self.periods_in_year
+        self.annualised_volatility_bar = self.df['log_pnl'].std() * np.sqrt(self.periods_in_year)
         self.strategy_sharpe = self._calc_strategy_sharpe()
         self.benchmark_sharpe = self._calc_benchmark_sharpe()
         self.max_drawdown = self._calc_max_drawdown()
@@ -139,6 +140,36 @@ class Performance:
         drawdown = peak - cum_pnl
         return drawdown.max()
 
+    def plot_cumulative_pnl(self):
+        if self.trades_df.empty:
+            print("No trades to plot.")
+            return
+
+        df = self.trades_df.sort_values('exit_time').copy()
+        df['cumulative_pnl'] = df['pnl'].cumsum()
+
+        x_pnl = df['exit_time'].values
+        y_pnl = df['cumulative_pnl'].values
+
+        plt.figure(figsize=(12, 6))
+
+        start_idx = 0
+        for i in range(1, len(y_pnl)):
+            if (y_pnl[i - 1] >= 0 > y_pnl[i]) or (y_pnl[i - 1] < 0 <= y_pnl[i]):
+                color = 'blue' if y_pnl[i - 1] >= 0 else 'red'
+                plt.plot(x_pnl[start_idx:i], y_pnl[start_idx:i], color=color)
+                start_idx = i
+        color = 'blue' if y_pnl[-1] >= 0 else 'red'
+        plt.plot(x_pnl[start_idx:], y_pnl[start_idx:], color=color, label='Cumulative PnL')
+
+        plt.xlabel('Time')
+        plt.ylabel('Cumulative PnL')
+        plt.title('Cumulative PnL Over Time')
+        plt.grid(True)
+        plt.legend()
+        plt.tight_layout()
+        plt.show()
+
     def evaluate(self):
         self._calculate_metrics_trade()
         self._calculate_metrics_bar()
@@ -152,7 +183,8 @@ class Performance:
             'win_rate': round(self.win_rate, 4),
             'profit_factor_trade': round(self.profit_factor_trade, 4),
             'profit_factor_bar': round(self.profit_factor_bar, 4),
-            'volatility_bar': round(self.volatility_bar, 4),
+            'annualised_return_bar': round(self.annualised_return_bar, 4),
+            'annualised_volatility_bar': round(self.annualised_volatility_bar, 4),
             'strategy_sharpe': round(self.strategy_sharpe, 4),
             'benchmark_sharpe': round(self.benchmark_sharpe, 4),
             'max_drawdown': round(self.max_drawdown, 4),
