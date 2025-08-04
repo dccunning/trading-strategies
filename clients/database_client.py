@@ -19,7 +19,7 @@ class Database:
             database: str = os.getenv("DATABASE_NAME"),
             user: str = os.getenv("DATABASE_USER"),
             password: str = os.getenv("DATABASE_PASSWORD"),
-            host: str = os.getenv("DATABASE_HOME_HOST"),# if on_home_network() else os.getenv("DATABASE_AWAY_HOST"),
+            host: str = os.getenv("DATABASE_HOME_HOST"),
             port: str = os.getenv("DATABASE_PORT")
     ):
         self.database = database
