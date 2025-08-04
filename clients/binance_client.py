@@ -105,6 +105,6 @@ if __name__ == "__main__":
     end_dt = datetime.utcnow()
 
     df = get_all_ohlcv("BTCUSDT", interval="1h", start=start_dt, end=end_dt)
-    df = get_ohlcv("BTCUSDT", interval="1h", start=start_dt, end=end_dt)
+    # df = get_ohlcv("BTCUSDT", interval="1h", start=start_dt, end=end_dt)
 
     print(df.info())
