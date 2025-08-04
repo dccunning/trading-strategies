@@ -143,7 +143,7 @@ if __name__ == "__main__":
         stocks=['NKE', 'AAPL', 'MSFT', 'NVDA', 'META', 'TSLA', 'BAC', 'JPM', 'AMD', 'NFLX', 'GOOGL'],
         time_start=datetime(2024, 1, 1, 0, 0, 0),
         x_pct=0.02,
-        max_hold_days=5
+        max_hold_days=1
     )
     print(result_df.to_string())
 

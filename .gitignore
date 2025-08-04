@@ -1,5 +1,5 @@
 .env
 .monitoring/kafka-stream.log
 dashboard/sec_stock_data
-algo_strategies/whale_options
+algo_strategies/archive
 README_LOCAL.md
